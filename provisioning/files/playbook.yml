@@ -1,0 +1,4 @@
+# vi: set sw=2 :
+- hosts: all
+  tasks:
+    - ping:   

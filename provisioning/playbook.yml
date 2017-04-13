@@ -1,0 +1,33 @@
+# vi: set sw=2 :
+
+- hosts: all
+  tasks:
+    - name: Copy ansible.cfg
+      copy:
+        src: files/ansible.cfg
+        dest: ~/.ansible.cfg
+    - name: Copy SSH key for target
+      copy:
+        src: ../.vagrant/machines/target/virtualbox/private_key
+        dest: ~/.ssh/target.private_key
+        mode: 0600
+    - name: Add "target" to /etc/hosts
+      become: yes
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ target_ip }} target"
+
+    - name: Create playground directory
+      file:
+        path: ~/playground
+        state: directory
+    - name: Create inventory
+      template:
+        src: templates/{{ item }}
+        dest: ~/playground/{{ item }}
+      with_items: [ inventory ]
+    - name: Copy playground files
+      copy:
+        src: files/{{ item }}
+        dest: ~/playground/{{ item }}
+      with_items: [ playbook.yml ]
